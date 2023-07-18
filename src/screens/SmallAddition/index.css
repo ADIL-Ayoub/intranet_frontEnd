@@ -1,0 +1,51 @@
+.title__conge {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .paramertrage__conge_item {
+    width: 96%;
+    padding: 16px;
+    background: #afbdc53d;
+    border-radius: 7px;
+    margin-top: 6px;
+  }
+  
+  .signle__items__settings {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  
+  .date_settings {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 70%;
+  }
+  
+  .date_settings > * {
+    margin-left: 4px;
+  }
+  .title__of__conge {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 50%;
+  }
+  .title__of__conge > * {
+    margin-left: 4px!important;
+  }
+  
+  .conge__actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .conge__actions > * {
+  margin-left: 4px;
+  }

@@ -1,0 +1,121 @@
+*,
+::before,
+::after {
+  box-sizing: inherit;
+}
+.container {
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.child_container {
+  flex: 1 1 0%;
+  display: flex;
+  position: relative;
+  -moz-box-align: center;
+  align-items: center;
+  -moz-box-pack: center;
+  justify-content: center;
+}
+
+.background1 {
+  padding-top: 4rem;
+  padding-bottom: 1rem;
+  padding-left: 5rem;
+  padding-right: 0px !important;
+}
+.back1 {
+  max-width: 48rem;
+}
+
+.back2 {
+  z-index: -1;
+  bottom: 7%;
+  width: 100%;
+  position: absolute;
+}
+.auth_box {
+  width: 100%;
+}
+.content_box {
+  padding: 0 1.75rem;
+  height: 100%;
+  display: flex;
+  -moz-box-align: center;
+  align-items: center;
+  -moz-box-pack: center;
+  justify-content: center;
+}
+
+.content {
+  width: 100%;
+}
+
+.logo {
+  top: 4px;
+  left: 40px;
+  display: flex;
+  position: absolute;
+  -moz-box-align: center;
+  align-items: center;
+  -moz-box-pack: center;
+  justify-content: center;
+}
+
+.procheck,
+.sagma {
+  width: 140px;
+}
+
+.sagma {
+  margin-top: 2px;
+}
+
+.title__box {
+  margin-bottom: 1.5rem;
+}
+
+.title__box > * {
+  margin: 6px;
+}
+
+.text {
+  margin: 0px;
+  font-size: 0.875rem;
+  color: rgba(234, 234, 255, 0.6);
+}
+
+@media (min-width: 1200px) {
+  .auth_box {
+    max-width: 450px;
+  }
+  .title {
+    font-size: 1.4993rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .back1 {
+    max-width: 41rem;
+  }
+  .auth_box {
+    max-width: 400px;
+  }
+  .title {
+    font-size: 1.4993rem;
+  }
+  .background1 {
+    padding-top: 1rem;
+    padding-bottom: 0rem;
+    padding-left: 0rem;
+    padding-right: 0px !important;
+  }
+}
+
+@media (min-width: 600px) {
+  .title {
+    font-size: 1.3118rem;
+  }
+}

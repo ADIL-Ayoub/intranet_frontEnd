@@ -1,0 +1,28 @@
+#vertical-tabpanel-0 {
+  width: calc(100% - 30px);
+}
+.container_tabs {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dividerDiv {
+  width: 2px;
+  background: #c9c9c9;
+  height: 260px;
+  margin-top: 15px;
+  margin-right: 24px;
+}
+.content_tabs {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-left: 16px;
+}
+
+.isAbsent > * {
+  margin-left: 12px;
+}

@@ -1,0 +1,27 @@
+#outlined-start-adornment-label {
+  color: #de8b16;
+  font-family: "Regular";
+}
+
+::placeholder {
+  color: #5e5c5c !important;
+  font-size: 10px !important;
+  letter-spacing: 1.5px;
+}
+
+#outlined-start-adornment {
+  color: #de8b16;
+  font-size: 12px !important;
+  font-family: "Regular";
+}
+#outlined-start-adornment-label {
+  font-size: 14px;
+  font-family: "Regular";
+}
+
+.MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorSuccess.MuiInputBase-formControl.MuiInputBase-adornedStart {
+  border-radius: 12px;
+}
+.MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorWarning.MuiInputBase-formControl.MuiInputBase-adornedStart{
+  border-radius: 9px;
+}

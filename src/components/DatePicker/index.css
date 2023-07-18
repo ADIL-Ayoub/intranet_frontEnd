@@ -1,0 +1,33 @@
+.MuiInputBase-root.MuiOutlinedInput-root.MuiInputBase-colorPrimary.MuiInputBase-formControl.MuiInputBase-adornedEnd {
+    border-radius: 12px;
+    padding: 3px 8px;
+    margin-left: 2px;
+    margin-right: 8px;
+    margin-top: 6px;
+  }
+  
+  .MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLabel-animated.MuiInputLabel-shrink.MuiInputLabel-outlined.MuiFormLabel-colorPrimary.MuiFormLabel-filled {
+    color: #e38e16 !important;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    font-family: "Regular";
+  }
+  
+  ::placeholder {
+    color: #5e5c5c !important;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+  }
+  .MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedEnd {
+    font-size: 12px;
+    color: #e38e16 !important;
+    font-family: "Regular";
+  }
+  /* 
+  .MuiFormControl-root.MuiTextField-root {
+    width: 200px!important;
+  } */
+  
+  .MuiFormControl-root.MuiTextField-root.date_picker {
+    width: 240px!important;
+  }

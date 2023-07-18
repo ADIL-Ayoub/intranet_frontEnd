@@ -1,0 +1,21 @@
+.weekly > * {
+  margin-left: 10px!important;
+}
+.weekly {
+  display: flex;
+  margin-bottom: 17px;
+}
+.inputsTimesheetProjet{
+  display: flex;
+  /* justify-content: flex-start; */
+  align-items: center;
+  width: 100%;
+
+}
+.inputsTimesheetProjet > *{
+  margin-left: 12px;
+}
+.TsProject{
+  margin-top: 10px;
+  
+}

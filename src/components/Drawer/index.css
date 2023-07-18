@@ -1,0 +1,32 @@
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorPrimary.MuiAppBar-positionFixed.mui-fixed {
+  background-color: #fcfcfc;
+  box-shadow: none;
+  border-bottom: 1px solid #dcd9d9;
+}
+
+.MuiToolbar-root.MuiToolbar-gutters.MuiToolbar-regular {
+  position: relative;
+}
+
+.MuiTypography-root.MuiTypography-h6.MuiTypography-noWrap {
+  color: rgb(236, 159, 54) !important;
+}
+
+.MuiButtonBase-root.MuiIconButton-root.MuiIconButton-colorInherit.MuiIconButton-edgeStart.MuiIconButton-sizeMedium {
+  color: #756754;
+}
+
+.MuiButtonBase-root.MuiIconButton-root.MuiIconButton-sizeSmall {
+  background: #f2f2f2 !important;
+  padding: 5px !important;
+  border: 2px solid #bbbaba !important;
+  border-radius: 30px;
+}
+
+.MuiAvatar-root.MuiAvatar-circular.MuiAvatar-colorDefault {
+  font-size: 16px !important;
+}
+
+.MuiButtonBase-root.MuiListItemButton-root.MuiListItemButton-gutters {
+  padding: 13px 19px;
+}

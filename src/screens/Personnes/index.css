@@ -1,0 +1,33 @@
+.title_header {
+    display: flex;
+    flex-direction: revert;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  
+  .title_header > * {
+    margin-left: 6px;
+  }
+  .title_header h3 {
+    font-size: 13px;
+  }
+  
+  .title_header .add_user_icon {
+    background: #e3e3e380;
+    width: 33px;
+    height: 32px;
+    border-radius: 10px;
+    padding: 6px;
+    color: #eaa443;
+    border: 1px solid #d9d2d2;
+  }
+
+  .title_header .add_user_icon {
+    background: #e3e3e380;
+    width: 33px;
+    height: 32px;
+    border-radius: 10px;
+    padding: 6px;
+    color: #eaa443;
+    border: 1px solid #d9d2d2;
+  }

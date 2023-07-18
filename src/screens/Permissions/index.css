@@ -1,0 +1,45 @@
+.users__container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.title_header {
+  display: flex;
+  flex-direction: revert;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.title_header > * {
+  margin-left: 6px;
+}
+.title_header h3 {
+  font-size: 13px;
+}
+
+.title_header .add_user_icon {
+  background: #e3e3e380;
+  width: 33px;
+  height: 32px;
+  border-radius: 10px;
+  padding: 6px;
+  color: #eaa443;
+  border: 1px solid #d9d2d2;
+}
+
+.add_user_access img {
+  width: 270px;
+  height: 280px;
+}
+
+.add_user_image {
+  width: 100%;
+  text-align: center;
+}
+
+.user__form {
+  width: calc(100% - 27px);
+  margin: 14px auto;
+}

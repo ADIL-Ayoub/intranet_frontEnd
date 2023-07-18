@@ -1,0 +1,24 @@
+.parties_table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.tsInputContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.tsInput {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.parties_class {
+  padding: 4px;
+  border-radius: 8px;
+  margin: 2px;
+}
