@@ -58,4 +58,10 @@ export const PERSONNES = {
 	AssignPersonnesToService: async (id, data) => {
 		return await backend.put(`/intranet/service/assignResponsable/${id}`, data);
 	},
+	//mon code
+	findPersonneByUser: async (user) => {
+		return await backend.get(
+			`intranet/personnel/personnels/byUser?user=${user}`,
+		);
+	},
 };

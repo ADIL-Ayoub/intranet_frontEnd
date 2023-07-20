@@ -4,19 +4,19 @@ import "./index.css";
 import { Fonts, useColors, FontSize, useToast } from "@common";
 import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
 import { Divider } from "@mui/material";
-import { TextInput, Select, Button } from "@components";
+import { TextInput, Select, Button, DatePicker } from "@components";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
-import { HOLIDAYS, CONGE } from "@services";
+import { HOLIDAYS, CONGE, PERSONNES } from "@services";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 //mon code
-import { DatePicker } from "@mui/x-date-pickers";
+
 export default ({}) => {
 	const toast = useToast();
 	const [holidays, setHolidays] = useState([]);
@@ -25,8 +25,6 @@ export default ({}) => {
 	const [typeConge, setTypeConge] = useState(null);
 	const [detailConge, setDetailConge] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
-	const [maxVal, setMaxVal] = useState("");
-	const [minVal, setMinVal] = useState("");
 	const [value, setValue] = React.useState("jour");
 	const [affected, setAffected] = useState({ id: null });
 	const [service, setService] = useState([]);
@@ -34,13 +32,18 @@ export default ({}) => {
 	const [jours, setJours] = useState(0);
 	const [solde, setSolde] = useState(0);
 	const [tvalue, SetTValue] = useState("");
+	const [dateStart, setDateStart] = useState(null);
+	const [dateEnd, setDateEnd] = useState(null);
+	const [isDateStartValid, setIsDateStartValid] = useState(true);
+	const [isDateEndValid, setIsDateEndValid] = useState(true);
+	const [isFirstTime, setIsFirstTime] = useState(true);
 	const user = useSelector(({ account }) => account.user);
-	const temp_user = { id: "c176638b-9d94-480c-826f-44244334aa5b" };
-	useEffect(() => {
-		//console.log("useEfffect CAlled");
-		console.log(user.id);
-		handleChangeJours();
-	}, [maxVal, minVal]);
+	const temp_user = { id: "215f08ff-ce21-4b42-b5f1-2aac5b56b420" };
+	// useEffect(() => {
+	// 	//console.log("useEfffect CAlled");
+	// 	console.log(user.id);
+	// 	handleChangeJours();
+	// }, [maxVal, minVal]);
 
 	const [holidayObject, setHolidayValue] = useState({
 		typeConge: null,
@@ -92,14 +95,21 @@ export default ({}) => {
 	const handleChange = (event) => {
 		setValue(event.target.value);
 	};
-
+	//mon code
 	useEffect(() => {
-		CONGE.fetchSolde(temp_user)
-			.then((response) => setSolde(response.data))
-			.catch((error) => console.log(error));
-		console.log(solde);
+		PERSONNES.findPersonneByUser(temp_user.id)
+			.then((response) => console.log(response.data))
+			.catch((e) => console.log(e));
+		// CONGE.fetchSolde(temp_user)
+
+		// 	.then((response) => setSolde(response.data))
+		// 	.catch((error) => console.log(error));
+		// console.log(solde);
 		FetchHolidays();
 	}, []);
+	useEffect(() => {
+		dateStart && dateEnd && handleChangeDateEnd(dateStart);
+	}, [dateStart]);
 
 	const handleOnChangeTypeOfConge = (e) => {
 		const find = holidays.find((ele) => ele?.id === e.target.value);
@@ -111,14 +121,6 @@ export default ({}) => {
 	};
 
 	const handleAddNewConge = () => {};
-
-	const handleChangeMax = (e) => {
-		setMaxVal(e.target.value);
-	};
-
-	const handleChangeMin = (e) => {
-		setMinVal(e.target.value);
-	};
 
 	const FetchHolidays = () => {
 		setIsLoading(true);
@@ -147,13 +149,54 @@ export default ({}) => {
 	};
 
 	//Mon code
-	const handleChangeJours = () => {
-		let total = maxVal - minVal ? maxVal - minVal : 0;
-		!!maxVal &&
-			!!minVal &&
-			maxVal > minVal &&
-			solde >= total &&
-			setJours(maxVal - minVal);
+	// const handleChangeJours = () => {
+	// 	let total = maxVal - minVal ? maxVal - minVal : 0;
+	// 	!!maxVal &&
+	// 		!!minVal &&
+	// 		maxVal > minVal &&
+	// 		solde >= total &&
+	// 		setJours(maxVal - minVal);
+	// };
+	const handleChangeDateStart = (newDatePicked) => {
+		const currentDate = new Date();
+		console.log(newDatePicked - currentDate);
+		setDateStart(newDatePicked);
+		let differenceInDays = calculateDifferenceBetweenTwoDates(
+			currentDate,
+			newDatePicked,
+		);
+		differenceInDays > 1
+			? setIsDateStartValid(true)
+			: setIsDateStartValid(false);
+
+		console.log("Difference : ", differenceInDays);
+		//dateEnd && handleChangeDateEnd(dateEnd);
+	};
+	const calculateDifferenceBetweenTwoDates = (startDate, endDate) => {
+		let differenceInDays = (endDate - startDate) / (1000 * 60 * 60 * 24);
+		return differenceInDays < 0
+			? -1
+			: (differenceInDays = Math.ceil(differenceInDays));
+	};
+	const handleChangeDateEnd = (newDatePicked) => {
+		const date = !!dateStart ? dateStart : new Date();
+		console.log(date);
+		let differenceInDays = calculateDifferenceBetweenTwoDates(
+			date,
+			newDatePicked,
+		);
+		console.log(differenceInDays);
+		differenceInDays > 0 ? setIsDateEndValid(true) : setIsDateEndValid(false);
+
+		setDateEnd(newDatePicked);
+	};
+	const calculateDateDifference = () => {
+		if (!dateStart || !dateEnd) {
+			return null; // If either date is not selected, return null or any other appropriate value
+		}
+		const differenceInMilliseconds = dateEnd - dateStart;
+		const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
+		return Math.abs(differenceInDays); // Use Math.abs to handle negative differences
 	};
 
 	return (
@@ -218,54 +261,32 @@ export default ({}) => {
 					{!!typeConge && (
 						<div className="gridiT">
 							<div className="date_settings">
-								<TextInput
-									label="Valeur maximale"
-									IconName={TrendingDownIcon}
-									value={maxVal}
-									handleChangeValue={(e) => handleChangeMax(e)}
-									style={{ width: "100%", marginTop: 8, borderRadius: 22 }}
-									removeBase
-									useGray
-								/>
-								<TextInput
-									label="Valeur minimale"
-									IconName={TrendingUpIcon}
-									value={minVal}
-									handleChangeValue={(e) => handleChangeMin(e)}
-									style={{ width: "100%", marginTop: 8, borderRadius: 22 }}
-									removeBase
-									useGray
+								<DatePicker
+									label="Date de depart"
+									defaultValue={"2022-04-17"}
+									value={dateStart}
+									onChangeDate={handleChangeDateStart}
 								/>
 								<DatePicker
-									label="Uncontrolled picker"
+									label="Date de reprise"
 									defaultValue={"2022-04-17"}
+									value={dateEnd}
+									onChangeDate={handleChangeDateEnd}
 								/>
+								<br />
+
+								{!isDateStartValid &&
+									toast(
+										"error",
+										"Erreur: Veuillez inserer une date valide et differente de 2 jours de la date actuelle!",
+									)}
+								{!isDateEndValid &&
+									toast(
+										"error",
+										"Erreur:  Date de reprise doit etre plus grand que la date de depart",
+									)}
 							</div>
-							<FormControl className="radio__class">
-								<FormLabel
-									id="demo-controlled-radio-buttons-group"
-									style={{ color: Colors.primary }}
-								>
-									Période
-								</FormLabel>
-								<RadioGroup
-									aria-labelledby="demo-controlled-radio-buttons-group"
-									name="controlled-radio-buttons-group"
-									value={value}
-									onChange={handleChange}
-								>
-									<FormControlLabel
-										value="heur"
-										control={<Radio style={{ color: Colors.primary }} />}
-										label="Heur"
-									/>
-									<FormControlLabel
-										value="jour"
-										control={<Radio style={{ color: Colors.primary }} />}
-										label="Jour"
-									/>
-								</RadioGroup>
-							</FormControl>
+
 							{holidaysDetails.length > 0 && !!detailConge && (
 								<Button
 									btnText={"Enregistrer"}
@@ -289,7 +310,9 @@ export default ({}) => {
 					)}
 				</div>
 				<br />
-				Jours :{jours}
+				Jours :{calculateDateDifference()}
+				<br />
+				superieur? : {dateEnd > dateStart ? "oui" : "non"}
 				<Divider />
 				<br />
 				<div className="conge__actions">
