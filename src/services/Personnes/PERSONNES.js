@@ -64,4 +64,7 @@ export const PERSONNES = {
 			`intranet/personnel/personnels/byUser?user=${user}`,
 		);
 	},
+	findPersonneById: async (id) => {
+		return await backend.get(`intranet/personnel/${id}`);
+	},
 };

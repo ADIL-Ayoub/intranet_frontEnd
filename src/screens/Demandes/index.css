@@ -15,6 +15,7 @@
   
   .signle__items__settings {
     display: flex;
+    flex-direction: column;
     justify-content: flex-start;
     align-items: center;
   }
@@ -74,5 +75,9 @@
     width: 40%;
     flex-direction: row !important;
     margin-left: 47px;
+  }
+  .test_class{
+    display : flex;
+    flex-direction: row;
   }
   

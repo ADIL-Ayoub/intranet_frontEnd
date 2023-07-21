@@ -38,7 +38,9 @@ export default ({}) => {
 	const [isDateEndValid, setIsDateEndValid] = useState(true);
 	const [isFirstTime, setIsFirstTime] = useState(true);
 	const user = useSelector(({ account }) => account.user);
-	const temp_user = { id: "215f08ff-ce21-4b42-b5f1-2aac5b56b420" };
+	const [personne, setPersonne] = useState({});
+	const [responsable, setResponsable] = useState({});
+	const temp_user = { id: "ec1c0412-a8b8-46dc-838e-b2dcdd5abaf2" };
 	// useEffect(() => {
 	// 	//console.log("useEfffect CAlled");
 	// 	console.log(user.id);
@@ -97,18 +99,29 @@ export default ({}) => {
 	};
 	//mon code
 	useEffect(() => {
-		PERSONNES.findPersonneByUser(temp_user.id)
-			.then((response) => console.log(response.data))
+		//console.log(user.id);
+		// Pour obtenir toutes les données de la personne y compris son id d'après l 'id du user
+		PERSONNES.findPersonneByUser(user.id)
+			.then((response) => {
+				PERSONNES.findPersonneById(response.data.service.codeResponsable)
+					.then((response) => setResponsable(response.data))
+					.catch((e) => console.log(e));
+				//console.log(response.data);
+				setPersonne(response.data);
+				// obtenir le solde de la personne obtenue par la premiere methode
+				CONGE.fetchSolde(response.data)
+					.then((response) => setSolde(response.data))
+					.catch((error) => console.log(error));
+			})
 			.catch((e) => console.log(e));
-		// CONGE.fetchSolde(temp_user)
-
-		// 	.then((response) => setSolde(response.data))
-		// 	.catch((error) => console.log(error));
-		// console.log(solde);
+		// PERSONNES.findPersonneById(personne.id)
+		// 	.then((response) => setResponsable(response.data))
+		// 	.catch((e) => console.log(e));
 		FetchHolidays();
 	}, []);
 	useEffect(() => {
-		dateStart && dateEnd && handleChangeDateEnd(dateStart);
+		const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
+		dateStart && dateEnd && handleChangeDateEnd(dateStart + ONE_DAY_IN_MS);
 	}, [dateStart]);
 
 	const handleOnChangeTypeOfConge = (e) => {
@@ -170,7 +183,6 @@ export default ({}) => {
 			: setIsDateStartValid(false);
 
 		console.log("Difference : ", differenceInDays);
-		//dateEnd && handleChangeDateEnd(dateEnd);
 	};
 	const calculateDifferenceBetweenTwoDates = (startDate, endDate) => {
 		let differenceInDays = (endDate - startDate) / (1000 * 60 * 60 * 24);
@@ -230,6 +242,49 @@ export default ({}) => {
 			</div>
 			<div className="paramertrage__conge_item">
 				<div className="signle__items__settings">
+					<div className="test_class">
+						<TextInput
+							label="Nom de l'employé"
+							IconName={TrendingDownIcon}
+							value={personne.snom + " " + personne.sprenom}
+							disabled={true}
+							//handleChangeValue={(e) => handleChangeMax(e)}
+							style={{ width: "100%", marginTop: 8, borderRadius: 22 }}
+							removeBase
+							useGray
+						/>
+						<TextInput
+							label="Poste"
+							IconName={TrendingDownIcon}
+							value={personne.sposte}
+							disabled={true}
+							//handleChangeValue={(e) => handleChangeMax(e)}
+							style={{ width: "100%", marginTop: 8, borderRadius: 22 }}
+							removeBase
+							useGray
+						/>
+						<TextInput
+							label="Service"
+							IconName={TrendingDownIcon}
+							value={personne.service?.nameService}
+							disabled={true}
+							//handleChangeValue={(e) => handleChangeMax(e)}
+							style={{ width: "100%", marginTop: 8, borderRadius: 22 }}
+							removeBase
+							useGray
+						/>
+						<TextInput
+							label="Responsable"
+							IconName={TrendingDownIcon}
+							value={responsable.snom + " " + responsable.sprenom}
+							disabled={true}
+							//handleChangeValue={(e) => handleChangeMax(e)}
+							style={{ width: "100%", marginTop: 8, borderRadius: 22 }}
+							removeBase
+							useGray
+						/>
+					</div>
+
 					<div className="title__of__conge">
 						<Select
 							isHolidays
