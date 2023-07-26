@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import "./index.css";
 import { Fonts, useColors, FontSize, useToast } from "@common";
@@ -16,6 +16,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 //mon code
+import AddIcon from "@mui/icons-material/Add";
 
 export default ({}) => {
 	const toast = useToast();
@@ -29,17 +30,20 @@ export default ({}) => {
 	const [affected, setAffected] = useState({ id: null });
 	const [service, setService] = useState([]);
 	//Mon code
-	const [jours, setJours] = useState(0);
+	// const [jours, setJours] = useState(0);
 	const [solde, setSolde] = useState(0);
-	const [tvalue, SetTValue] = useState("");
+	// const [tvalue, SetTValue] = useState("");
 	const [dateStart, setDateStart] = useState(null);
 	const [dateEnd, setDateEnd] = useState(null);
 	const [isDateStartValid, setIsDateStartValid] = useState(true);
 	const [isDateEndValid, setIsDateEndValid] = useState(true);
-	const [isFirstTime, setIsFirstTime] = useState(true);
+	// const [isFirstTime, setIsFirstTime] = useState(true);
 	const user = useSelector(({ account }) => account.user);
 	const [personne, setPersonne] = useState({});
 	const [responsable, setResponsable] = useState({});
+	const [TaskName, setTaskName] = useState("");
+	const [description, setDescription] = useState("");
+	const [valid, setValid] = useState(true);
 	const temp_user = { id: "ec1c0412-a8b8-46dc-838e-b2dcdd5abaf2" };
 	// useEffect(() => {
 	// 	//console.log("useEfffect CAlled");
@@ -103,22 +107,15 @@ export default ({}) => {
 		// Pour obtenir toutes les données de la personne y compris son id d'après l 'id du user
 		PERSONNES.findPersonneByUser(user.id)
 			.then((response) => {
-				PERSONNES.findPersonneById(response.data.service.codeResponsable)
-					.then((response) => setResponsable(response.data))
-					.catch((e) => console.log(e));
-				//console.log(response.data);
+				console.log("*********************************");
+				console.log(response.data);
 				setPersonne(response.data);
-				// obtenir le solde de la personne obtenue par la premiere methode
-				CONGE.fetchSolde(response.data)
-					.then((response) => setSolde(response.data))
-					.catch((error) => console.log(error));
 			})
 			.catch((e) => console.log(e));
-		// PERSONNES.findPersonneById(personne.id)
-		// 	.then((response) => setResponsable(response.data))
-		// 	.catch((e) => console.log(e));
 		FetchHolidays();
 	}, []);
+
+	//pour instancier dateEnd par dateStart + 1 j automatiquement
 	useEffect(() => {
 		const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 		dateStart && dateEnd && handleChangeDateEnd(dateStart + ONE_DAY_IN_MS);
@@ -133,12 +130,34 @@ export default ({}) => {
 		setDetailConge(e.target.value);
 	};
 
-	const handleAddNewConge = () => {};
+	const handleAddNewConge = () => {
+		let data = {
+			name: TaskName,
+			description,
+			typeDemande: "1f3242ed-db17-4e87-8034-9bfd69464ebd",
+			typeConge,
+			dateDebut: dateStart,
+			dateReprise: dateEnd,
+		};
+		CONGE.ajouterDemandeConge(user.id, data)
+			.then((response) => {
+				if (response.status === 200 || response.status === 201) {
+					toast("success", response.data.message);
+					TaskName = description = dateStart = dateEnd = typeConge = null;
+				} else if (response.status === 500) {
+					toast("error", response?.response.data);
+				} else {
+					toast("error", response?.response.data.message);
+				}
+			})
+			.catch((error) => console.log("error", error?.response.data));
+	};
 
 	const FetchHolidays = () => {
 		setIsLoading(true);
 		HOLIDAYS.GetAllHolidays()
 			.then((data) => {
+				console.log(data);
 				setIsLoading(false);
 				if (data.status === 200 || data.status === 201) {
 					setHolidays(!!data ? data?.data : []);
@@ -160,47 +179,40 @@ export default ({}) => {
 				}
 			});
 	};
-
-	//Mon code
-	// const handleChangeJours = () => {
-	// 	let total = maxVal - minVal ? maxVal - minVal : 0;
-	// 	!!maxVal &&
-	// 		!!minVal &&
-	// 		maxVal > minVal &&
-	// 		solde >= total &&
-	// 		setJours(maxVal - minVal);
-	// };
 	const handleChangeDateStart = (newDatePicked) => {
 		const currentDate = new Date();
-		console.log(newDatePicked - currentDate);
-		setDateStart(newDatePicked);
 		let differenceInDays = calculateDifferenceBetweenTwoDates(
 			currentDate,
 			newDatePicked,
 		);
-		differenceInDays > 1
-			? setIsDateStartValid(true)
-			: setIsDateStartValid(false);
-
-		console.log("Difference : ", differenceInDays);
+		if (differenceInDays < 2) {
+			toast(
+				"error",
+				"Erreur: Veuillez inserer une date valide et differente de 2 jours de la date actuelle!",
+			);
+			setDateStart(null);
+		} else {
+			setDateStart(newDatePicked);
+		}
 	};
 	const calculateDifferenceBetweenTwoDates = (startDate, endDate) => {
 		let differenceInDays = (endDate - startDate) / (1000 * 60 * 60 * 24);
 		return differenceInDays < 0
-			? -1
+			? differenceInDays
 			: (differenceInDays = Math.ceil(differenceInDays));
 	};
 	const handleChangeDateEnd = (newDatePicked) => {
 		const date = !!dateStart ? dateStart : new Date();
-		console.log(date);
 		let differenceInDays = calculateDifferenceBetweenTwoDates(
 			date,
 			newDatePicked,
 		);
-		console.log(differenceInDays);
-		differenceInDays > 0 ? setIsDateEndValid(true) : setIsDateEndValid(false);
-
-		setDateEnd(newDatePicked);
+		if (differenceInDays < 1) {
+			toast("error", "Erreur: balabalalalalalal!");
+			setDateEnd(null);
+		} else {
+			setDateEnd(new Date(newDatePicked));
+		}
 	};
 	const calculateDateDifference = () => {
 		if (!dateStart || !dateEnd) {
@@ -244,47 +256,24 @@ export default ({}) => {
 				<div className="signle__items__settings">
 					<div className="test_class">
 						<TextInput
-							label="Nom de l'employé"
-							IconName={TrendingDownIcon}
-							value={personne.snom + " " + personne.sprenom}
-							disabled={true}
-							//handleChangeValue={(e) => handleChangeMax(e)}
+							label="Nom du congé"
+							IconName={AddIcon}
+							value={TaskName}
+							handleChangeValue={(e) => setTaskName(e.target.value)}
 							style={{ width: "100%", marginTop: 8, borderRadius: 22 }}
 							removeBase
 							useGray
 						/>
 						<TextInput
-							label="Poste"
-							IconName={TrendingDownIcon}
-							value={personne.sposte}
-							disabled={true}
-							//handleChangeValue={(e) => handleChangeMax(e)}
-							style={{ width: "100%", marginTop: 8, borderRadius: 22 }}
-							removeBase
-							useGray
-						/>
-						<TextInput
-							label="Service"
-							IconName={TrendingDownIcon}
-							value={personne.service?.nameService}
-							disabled={true}
-							//handleChangeValue={(e) => handleChangeMax(e)}
-							style={{ width: "100%", marginTop: 8, borderRadius: 22 }}
-							removeBase
-							useGray
-						/>
-						<TextInput
-							label="Responsable"
-							IconName={TrendingDownIcon}
-							value={responsable.snom + " " + responsable.sprenom}
-							disabled={true}
-							//handleChangeValue={(e) => handleChangeMax(e)}
+							label="Description"
+							IconName={AddIcon}
+							value={description}
+							handleChangeValue={(e) => setDescription(e.target.value)}
 							style={{ width: "100%", marginTop: 8, borderRadius: 22 }}
 							removeBase
 							useGray
 						/>
 					</div>
-
 					<div className="title__of__conge">
 						<Select
 							isHolidays
@@ -293,103 +282,47 @@ export default ({}) => {
 							data={holidays}
 							style={{
 								width: "100%",
-								marginTop: 1,
+								marginTop: 3,
+								marginBottom: 3,
 							}}
 							value={typeConge}
 							handleOnChange={handleOnChangeTypeOfConge}
 						/>
-						{holidaysDetails.length > 0 && (
-							<Select
-								useId
-								isLabel
-								label={"Details"}
-								data={holidaysDetails}
-								style={{
-									width: "100%",
-									marginTop: 1,
-								}}
-								value={detailConge}
-								handleOnChange={handleOnChangeTypeOfDetailConge}
-							/>
-						)}
 					</div>
 					{!!typeConge && (
 						<div className="gridiT">
-							<div className="date_settings">
+							<div className="test_class">
 								<DatePicker
 									label="Date de depart"
-									defaultValue={"2022-04-17"}
 									value={dateStart}
 									onChangeDate={handleChangeDateStart}
 								/>
 								<DatePicker
 									label="Date de reprise"
-									defaultValue={"2022-04-17"}
 									value={dateEnd}
 									onChangeDate={handleChangeDateEnd}
 								/>
-								<br />
-
-								{!isDateStartValid &&
-									toast(
-										"error",
-										"Erreur: Veuillez inserer une date valide et differente de 2 jours de la date actuelle!",
-									)}
-								{!isDateEndValid &&
-									toast(
-										"error",
-										"Erreur:  Date de reprise doit etre plus grand que la date de depart",
-									)}
 							</div>
-
-							{holidaysDetails.length > 0 && !!detailConge && (
-								<Button
-									btnText={"Enregistrer"}
-									IconName={DoneIcon}
-									// handlePressed={() => console.log("close .............")}
-									// handlePressed={handleValidate}
-									isLoading={isLoading}
-									style={{
-										color: Colors.blackText,
-										backgroundColor: Colors.primary,
-										borderRadius: 12,
-										padding: "12px 23px",
-										fontFamily: Fonts().primaryRegular,
-										fontSize: FontSize().smallText,
-										marginTop: "12px",
-										width: "100%",
-									}}
-								/>
-							)}
 						</div>
 					)}
 				</div>
 				<br />
-				Jours :{calculateDateDifference()}
-				<br />
-				superieur? : {dateEnd > dateStart ? "oui" : "non"}
+				{
+					// Jours :{calculateDateDifference()}
+					// <br />
+					// Solde: {solde ? solde : 0}
+					// {solde < calculateDifferenceBetweenTwoDates(dateStart, dateEnd) &&
+					// 	toast("error", "Vous n'avez pas ce solde!")}
+					// <br />
+					// superieur? : {dateEnd > dateStart ? "oui" : "non"}
+				}
 				<Divider />
 				<br />
 				<div className="conge__actions">
 					<Button
-						disabled={!typeConge || isLoading}
-						btnText={"Annuler"}
-						IconName={CloseIcon}
-						handlePressed={() => console.log("close .............")}
-						isLoading={isLoading}
-						style={{
-							color: Colors.blackText,
-							backgroundColor: Colors.error,
-							borderRadius: 12,
-							padding: "15px 26px",
-							fontFamily: Fonts().primaryRegular,
-							fontSize: FontSize().smallText,
-							marginTop: "22px",
-							width: "100%",
-						}}
-					/>
-					<Button
-						disabled={!typeConge || isLoading}
+						disabled={
+							!dateStart || !dateEnd || !TaskName || !description || !typeConge
+						}
 						btnText={"Sauvegarder"}
 						IconName={DoneIcon}
 						handlePressed={handleAddNewConge}
