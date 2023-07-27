@@ -27,6 +27,16 @@ import { useSelector } from "react-redux";
 
 const BarItem = [
 	{
+		id: 0,
+		name: "test",
+		label: "Test",
+		path: "/test",
+		Icon: <FcHome />,
+		privilege: "dashboard",
+		isList: false,
+		subList: [],
+	},
+	{
 		id: 1,
 		name: "dashboard",
 		label: "Dashboard",

@@ -11,7 +11,9 @@ import { TIMESHEETS } from "./TimeSheets";
 import { PAYS } from "./Countries/Pays";
 import { HOLIDAYS } from "./Holidays";
 import { TIMESHEETBYPROJECT } from "./TimeSheetByProjet";
+//mon code
 import { CONGE } from "./Conge/Conge";
+import { DEMANDE } from "./Demande/DEMANDE";
 
 export {
 	AUTH,
@@ -28,4 +30,5 @@ export {
 	HOLIDAYS,
 	TIMESHEETBYPROJECT,
 	CONGE,
+	DEMANDE,
 };

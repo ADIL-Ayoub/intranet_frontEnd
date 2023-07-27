@@ -14,35 +14,36 @@ import Import from "./Import";
 import Clients from "./Clients";
 import DetailsDeparetement from "./Departement/components/Details";
 import ServiceScreen from "./Departement/components/Services";
-import {GenerationTs} from "./parametrage";
+import { GenerationTs } from "./parametrage";
 import Semain from "./Semain";
 import Affectation from "./Affectation";
 import SmallAddition from "./SmallAddition";
 import ChangePassword from "./ChangePassword";
-// import Demandes from "./Demandes";
-
+import DemandeConge from "./Demandes/DemandeConge";
+import FetchDemande from "./Demandes/FetchDemande";
 
 export {
-  Home,
-  SignIn,
-  ChangePassword,
-  SignUp,
-  Roles,
-  Users,
-  Permissions,
-  Logout,
-  Personnes,
-  Conge,
-  Departement,
-  Services,
-  Projects,
-  Import,
-  Clients,
-  DetailsDeparetement,
-  ServiceScreen,
-  GenerationTs,
-  Semain,
-  Affectation,
-  SmallAddition,
-  // Demandes
+	Home,
+	SignIn,
+	ChangePassword,
+	SignUp,
+	Roles,
+	Users,
+	Permissions,
+	Logout,
+	Personnes,
+	Conge,
+	Departement,
+	Services,
+	Projects,
+	Import,
+	Clients,
+	DetailsDeparetement,
+	ServiceScreen,
+	GenerationTs,
+	Semain,
+	Affectation,
+	SmallAddition,
+	DemandeConge,
+	FetchDemande,
 };

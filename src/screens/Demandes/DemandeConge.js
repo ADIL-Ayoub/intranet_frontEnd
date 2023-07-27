@@ -9,7 +9,7 @@ import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
-import { HOLIDAYS, CONGE, PERSONNES } from "@services";
+import { HOLIDAYS, CONGE, PERSONNES, DEMANDE } from "@services";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -24,91 +24,25 @@ export default ({}) => {
 	const [holidaysDetails, setHolidaysDetails] = useState([]);
 	const Colors = useColors();
 	const [typeConge, setTypeConge] = useState(null);
-	const [detailConge, setDetailConge] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
-	const [value, setValue] = React.useState("jour");
-	const [affected, setAffected] = useState({ id: null });
-	const [service, setService] = useState([]);
 	//Mon code
-	// const [jours, setJours] = useState(0);
-	const [solde, setSolde] = useState(0);
-	// const [tvalue, SetTValue] = useState("");
 	const [dateStart, setDateStart] = useState(null);
 	const [dateEnd, setDateEnd] = useState(null);
-	const [isDateStartValid, setIsDateStartValid] = useState(true);
-	const [isDateEndValid, setIsDateEndValid] = useState(true);
-	// const [isFirstTime, setIsFirstTime] = useState(true);
 	const user = useSelector(({ account }) => account.user);
 	const [personne, setPersonne] = useState({});
-	const [responsable, setResponsable] = useState({});
 	const [TaskName, setTaskName] = useState("");
 	const [description, setDescription] = useState("");
-	const [valid, setValid] = useState(true);
+	const [demande, setDemande] = useState({});
 	const temp_user = { id: "ec1c0412-a8b8-46dc-838e-b2dcdd5abaf2" };
-	// useEffect(() => {
-	// 	//console.log("useEfffect CAlled");
-	// 	console.log(user.id);
-	// 	handleChangeJours();
-	// }, [maxVal, minVal]);
-
-	const [holidayObject, setHolidayValue] = useState({
-		typeConge: null,
-		max: 0,
-		min: 0,
-		heur: false,
-		jour: true,
-		detaileConges: [],
-	});
-	const [holidayObjectDetails, setHolidayValueDetails] = useState({
-		label: null,
-		max: 0,
-		min: 0,
-	});
-	const handleValidate = () => {
-		if (!affected?.id) {
-			toast("error", "Vous devez d'abord sélectionner une personne");
-			return;
-		}
-		setIsLoading(true);
-		HOLIDAYS.AssignTypeConge(affected?.id, service)
-			.then((data) => {
-				setIsLoading(false);
-				if (data.status === 200 || data.status === 201) {
-					toast("success", "l'opération s'est terminée avec succès.");
-					setAffected({ id: null });
-					setService([]);
-				}
-			})
-			.catch((error) => {
-				if (error) {
-					if (error?.response) {
-						toast(
-							"error",
-							error?.response?.data?.message || "quelque chose s'est mal passé",
-						);
-						setIsLoading(false);
-					} else {
-						toast("error", "quelque chose s'est mal passé");
-						setIsLoading(false);
-					}
-				} else {
-					toast("error", "quelque chose s'est mal passé");
-					setIsLoading(false);
-				}
-			});
-	};
-
-	const handleChange = (event) => {
-		setValue(event.target.value);
-	};
 	//mon code
 	useEffect(() => {
+		DEMANDE.getDemandeByCodeTypeDemande("DC")
+			.then((response) => setDemande(response.data))
+			.catch((e) => console.log(e));
 		//console.log(user.id);
 		// Pour obtenir toutes les données de la personne y compris son id d'après l 'id du user
 		PERSONNES.findPersonneByUser(user.id)
 			.then((response) => {
-				console.log("*********************************");
-				console.log(response.data);
 				setPersonne(response.data);
 			})
 			.catch((e) => console.log(e));
@@ -126,15 +60,12 @@ export default ({}) => {
 		setHolidaysDetails(find?.detaileConges);
 		setTypeConge(e.target.value);
 	};
-	const handleOnChangeTypeOfDetailConge = (e) => {
-		setDetailConge(e.target.value);
-	};
 
 	const handleAddNewConge = () => {
 		let data = {
 			name: TaskName,
 			description,
-			typeDemande: "1f3242ed-db17-4e87-8034-9bfd69464ebd",
+			typeDemande: demande.id,
 			typeConge,
 			dateDebut: dateStart,
 			dateReprise: dateEnd,
@@ -142,22 +73,24 @@ export default ({}) => {
 		CONGE.ajouterDemandeConge(user.id, data)
 			.then((response) => {
 				if (response.status === 200 || response.status === 201) {
-					toast("success", response.data.message);
-					TaskName = description = dateStart = dateEnd = typeConge = null;
+					toast("success", response?.data?.message);
+					setTaskName("");
+					setDescription("");
+					setDateStart(null);
+					setDateEnd(null);
+					setTypeConge(null);
 				} else if (response.status === 500) {
-					toast("error", response?.response.data);
+					toast("error", response?.response?.data);
 				} else {
-					toast("error", response?.response.data.message);
+					toast("error", response?.response?.data?.message);
 				}
 			})
-			.catch((error) => console.log("error", error?.response.data));
+			.catch((error) => {});
 	};
-
 	const FetchHolidays = () => {
 		setIsLoading(true);
 		HOLIDAYS.GetAllHolidays()
 			.then((data) => {
-				console.log(data);
 				setIsLoading(false);
 				if (data.status === 200 || data.status === 201) {
 					setHolidays(!!data ? data?.data : []);
@@ -214,15 +147,6 @@ export default ({}) => {
 			setDateEnd(new Date(newDatePicked));
 		}
 	};
-	const calculateDateDifference = () => {
-		if (!dateStart || !dateEnd) {
-			return null; // If either date is not selected, return null or any other appropriate value
-		}
-		const differenceInMilliseconds = dateEnd - dateStart;
-		const differenceInDays = differenceInMilliseconds / (1000 * 60 * 60 * 24);
-		return Math.abs(differenceInDays); // Use Math.abs to handle negative differences
-	};
-
 	return (
 		<div
 			style={{
@@ -289,8 +213,8 @@ export default ({}) => {
 							handleOnChange={handleOnChangeTypeOfConge}
 						/>
 					</div>
-					{!!typeConge && (
-						<div className="gridiT">
+					<div>
+						{!!typeConge && (
 							<div className="test_class">
 								<DatePicker
 									label="Date de depart"
@@ -303,19 +227,10 @@ export default ({}) => {
 									onChangeDate={handleChangeDateEnd}
 								/>
 							</div>
-						</div>
-					)}
+						)}
+					</div>
 				</div>
 				<br />
-				{
-					// Jours :{calculateDateDifference()}
-					// <br />
-					// Solde: {solde ? solde : 0}
-					// {solde < calculateDifferenceBetweenTwoDates(dateStart, dateEnd) &&
-					// 	toast("error", "Vous n'avez pas ce solde!")}
-					// <br />
-					// superieur? : {dateEnd > dateStart ? "oui" : "non"}
-				}
 				<Divider />
 				<br />
 				<div className="conge__actions">

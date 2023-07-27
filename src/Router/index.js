@@ -21,8 +21,9 @@ import {
 	Semain,
 	Affectation,
 	SmallAddition,
+	DemandeConge,
+	FetchDemande,
 } from "@screens";
-import Demandes from "../screens/Demandes";
 import { Drawer } from "@components";
 import { useSelector } from "react-redux";
 
@@ -52,12 +53,13 @@ const AppLoggedRoutes = () => {
 			// ],
 		},
 		{ path: "/services", element: <Services /> },
-		{ path: "/demandes", element: <Demandes /> },
 		{ path: "/projects", element: <Projects /> },
 		{ path: "/import", element: <Import /> },
 		{ path: "/clients", element: <Clients /> },
 		{ path: "/logout", element: <Logout /> },
 		{ path: "/semain", element: <Semain /> },
+		{ path: "/demandes", element: <DemandeConge /> },
+		{ path: "/test", element: <FetchDemande /> },
 	]);
 	return routes;
 };
