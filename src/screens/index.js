@@ -20,7 +20,7 @@ import Affectation from "./Affectation";
 import SmallAddition from "./SmallAddition";
 import ChangePassword from "./ChangePassword";
 import DemandeConge from "./Demandes/DemandeConge";
-import FetchDemande from "./Demandes/FetchDemande";
+import FetchDemandesConges from "./Demandes/FetchDemandesConges";
 
 export {
 	Home,
@@ -45,5 +45,5 @@ export {
 	Affectation,
 	SmallAddition,
 	DemandeConge,
-	FetchDemande,
+	FetchDemandesConges,
 };

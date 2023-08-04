@@ -10,32 +10,32 @@ import { makeStyles } from "@mui/styles";
 import { useIsDarkMode } from "@common";
 
 export default ({ label, onChangeDate, value, isDisabled, isTime, style }) => {
-  const isDark = useIsDarkMode();
-  const classes = useStyle();
+	const isDark = useIsDarkMode();
+	const classes = useStyle();
 
-  return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} style = {style}>
-      {!isTime && (
-        <DatePicker
-          className="date_picker"
-          disabled={isDisabled}
-          label={label}
-          value={value}
-          onChange={(newValue) => onChangeDate(newValue)}
-          renderInput={(params) => <TextField {...params} />}
-          inputFormat="DD/MM/YYYY"
-        />
-      )}
-      {isTime && (
-        <TimePicker
-          label={label}
-          value={value}
-          onChange={(newValue) => onChangeDate(newValue)}
-          renderInput={(params) => <TextField {...params} />}
-        />
-      )}
-    </LocalizationProvider>
-  );
+	return (
+		<LocalizationProvider dateAdapter={AdapterDayjs} style={style}>
+			{!isTime && (
+				<DatePicker
+					className="date_picker"
+					disabled={isDisabled}
+					label={label}
+					value={value}
+					onChange={(newValue) => onChangeDate(newValue)}
+					renderInput={(params) => <TextField {...params} />}
+					inputFormat="DD/MM/YYYY"
+				/>
+			)}
+			{isTime && (
+				<TimePicker
+					label={label}
+					value={value}
+					onChange={(newValue) => onChangeDate(newValue)}
+					renderInput={(params) => <TextField {...params} />}
+				/>
+			)}
+		</LocalizationProvider>
+	);
 };
 
 const useStyle = makeStyles({});

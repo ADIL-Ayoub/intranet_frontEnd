@@ -22,10 +22,11 @@ import {
 	Affectation,
 	SmallAddition,
 	DemandeConge,
-	FetchDemande,
+	FetchDemandesConges,
 } from "@screens";
 import { Drawer } from "@components";
 import { useSelector } from "react-redux";
+import ValiderDemandesConges from "../screens/Demandes/ValiderDemandesConges";
 
 const AppLoggedRoutes = () => {
 	let routes = useRoutes([
@@ -59,7 +60,10 @@ const AppLoggedRoutes = () => {
 		{ path: "/logout", element: <Logout /> },
 		{ path: "/semain", element: <Semain /> },
 		{ path: "/demandes", element: <DemandeConge /> },
-		{ path: "/test", element: <FetchDemande /> },
+		{ path: "/demandes/:idDemandeParam", element: <DemandeConge /> },
+		{ path: "/test", element: <FetchDemandesConges /> },
+		{ path: "/mesConges", element: <FetchDemandesConges /> },
+		{ path: "/validerConges", element: <ValiderDemandesConges /> },
 	]);
 	return routes;
 };

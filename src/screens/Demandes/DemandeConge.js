@@ -1,22 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "./index.css";
 import { Fonts, useColors, FontSize, useToast } from "@common";
 import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
 import { Divider } from "@mui/material";
 import { TextInput, Select, Button, DatePicker } from "@components";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import DoneIcon from "@mui/icons-material/Done";
-import CloseIcon from "@mui/icons-material/Close";
 import { HOLIDAYS, CONGE, PERSONNES, DEMANDE } from "@services";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
 //mon code
 import AddIcon from "@mui/icons-material/Add";
+import { useNavigate, useParams } from "react-router-dom";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import { format } from "date-fns";
 
 export default ({}) => {
 	const toast = useToast();
@@ -33,19 +29,58 @@ export default ({}) => {
 	const [TaskName, setTaskName] = useState("");
 	const [description, setDescription] = useState("");
 	const [demande, setDemande] = useState({});
-	const temp_user = { id: "ec1c0412-a8b8-46dc-838e-b2dcdd5abaf2" };
+	// const temp_user = { id: "ec1c0412-a8b8-46dc-838e-b2dcdd5abaf2" };
+	const { idDemandeParam } = useParams();
+	const [demandeModifier, setDemandeModifier] = useState({});
+	const navigate = useNavigate();
 	//mon code
+
+	//Pour changer le format de la date de dd-MM-yyyy à yyyy-MM-dd
+	function formatDateFunction(inputDate) {
+		const [day, month, year] = inputDate.split("-");
+		const formattedDate = `${year}-${month}-${day}`;
+		return formattedDate;
+	}
+
+	//Pour initialiser les champs pour le cas d une modification
+	const initializeForm = () => {
+		// console.log();
+		if (idDemandeParam) {
+			setIsLoading(true);
+			DEMANDE.getDemandeById(idDemandeParam)
+				.then((response) => {
+					//console.log("**************************");
+					//console.log(response.data.content["0"]);
+					setDemandeModifier(response.data.content["0"]);
+					return response.data.content["0"];
+				})
+				.then((response) => {
+					handleClose();
+					setTaskName(response?.nomConge);
+					setTypeConge(response?.idTypeConge);
+					setDescription(response?.description);
+					setDateStart(formatDateFunction(response?.dateDebut));
+					setDateEnd(formatDateFunction(response?.dateReprise));
+				})
+				.catch((e) => console.log(e));
+		}
+	};
+
 	useEffect(() => {
+		if (idDemandeParam) initializeForm();
+		setIsLoading(true);
 		DEMANDE.getDemandeByCodeTypeDemande("DC")
-			.then((response) => setDemande(response.data))
-			.catch((e) => console.log(e));
-		//console.log(user.id);
-		// Pour obtenir toutes les données de la personne y compris son id d'après l 'id du user
-		PERSONNES.findPersonneByUser(user.id)
 			.then((response) => {
-				setPersonne(response.data);
+				handleClose();
+				setDemande(response.data);
 			})
 			.catch((e) => console.log(e));
+		// Pour obtenir toutes les données de la personne y compris son id d'après l 'id du user
+		// PERSONNES.findPersonneByUser(user.id)
+		// 	.then((response) => {
+		// 		setPersonne(response.data);
+		// 	})
+		// 	.catch((e) => console.log(e));
 		FetchHolidays();
 	}, []);
 
@@ -62,6 +97,7 @@ export default ({}) => {
 	};
 
 	const handleAddNewConge = () => {
+		setIsLoading(false);
 		let data = {
 			name: TaskName,
 			description,
@@ -72,6 +108,7 @@ export default ({}) => {
 		};
 		CONGE.ajouterDemandeConge(user.id, data)
 			.then((response) => {
+				handleClose();
 				if (response.status === 200 || response.status === 201) {
 					toast("success", response?.data?.message);
 					setTaskName("");
@@ -79,6 +116,34 @@ export default ({}) => {
 					setDateStart(null);
 					setDateEnd(null);
 					setTypeConge(null);
+				} else if (response.status === 500) {
+					toast("error", response?.response?.data);
+				} else {
+					toast("error", response?.response?.data?.message);
+				}
+			})
+			.catch((error) => {});
+	};
+	const handleModifyConge = () => {
+		setIsLoading(true);
+		let data = {
+			...demandeModifier,
+			nomConge: TaskName,
+			description,
+			dateDebut: dateStart,
+			dateReprise: dateEnd,
+		};
+		DEMANDE.modifierDemande(user.id, data)
+			.then((response) => {
+				handleClose();
+				if (response.status === 200 || response.status === 201) {
+					// toast("success", response?.data?.message);
+					// setTaskName("");
+					// setDescription("");
+					// setDateStart(null);
+					// setDateEnd(null);
+					// setTypeConge(null);
+					navigate("/test");
 				} else if (response.status === 500) {
 					toast("error", response?.response?.data);
 				} else {
@@ -141,11 +206,17 @@ export default ({}) => {
 			newDatePicked,
 		);
 		if (differenceInDays < 1) {
-			toast("error", "Erreur: balabalalalalalal!");
+			toast(
+				"error",
+				"Erreur: La date de reprise doit etre de 1 jour de difference  de la date de depart",
+			);
 			setDateEnd(null);
 		} else {
 			setDateEnd(new Date(newDatePicked));
 		}
+	};
+	const handleClose = () => {
+		setIsLoading(false);
 	};
 	return (
 		<div
@@ -157,6 +228,15 @@ export default ({}) => {
 				alignItems: "center",
 			}}
 		>
+			{isLoading && (
+				<Backdrop
+					sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+					open={isLoading}
+					onClick={handleClose}
+				>
+					<CircularProgress color="inherit" />
+				</Backdrop>
+			)}
 			<div className="title__conge">
 				<MiscellaneousServicesIcon style={{ color: "#716f6f" }} />
 				<h4
@@ -238,10 +318,22 @@ export default ({}) => {
 						disabled={
 							!dateStart || !dateEnd || !TaskName || !description || !typeConge
 						}
-						btnText={"Sauvegarder"}
+						btnText={idDemandeParam ? "Modifier" : "Sauvegarder"}
 						IconName={DoneIcon}
-						handlePressed={handleAddNewConge}
+						handlePressed={
+							idDemandeParam ? handleModifyConge : handleAddNewConge
+						}
 						isLoading={isLoading}
+						styleDisabled={{
+							text: "#FFF",
+							background: "#dbdbdb",
+							borderRadius: 12,
+							padding: "15px 26px",
+							fontFamily: Fonts().primaryRegular,
+							fontSize: FontSize().smallText,
+							marginTop: "22px",
+							width: "100%",
+						}}
 						style={{
 							color: Colors.blackText,
 							backgroundColor: Colors.primary,
