@@ -6,6 +6,7 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@common";
+import ValiderDemandesConges from "./ValiderDemandesConges";
 
 export default () => {
 	const user = useSelector(({ account }) => account.user);
@@ -27,15 +28,26 @@ export default () => {
 
 	const fetchDemandes = () => {
 		setIsLoading(true);
-		DEMANDE.getMyDemandes(user.id, rowsPerPage, page, sort)
-			.then((response) => {
-				setIsLoading(false);
-				setDemandes(response.data.content);
-				setCount(response.data.totalElements);
-				setPage(response?.data?.pageable?.pageNumber);
-				setRowsPerPage(response?.data?.pageable?.pageSize);
-			})
-			.catch((e) => console.log(e));
+		DEMANDE.getTypeDemandeByCodeTypeDemande("DC").then((response) => {
+			DEMANDE.getMyDemandes(
+				user.id,
+				response?.data?.id,
+				rowsPerPage,
+				page,
+				sort,
+			)
+				.then((response) => {
+					setIsLoading(false);
+					setDemandes(response.data.content);
+					setCount(response.data.totalElements);
+					setPage(response?.data?.pageable?.pageNumber);
+					setRowsPerPage(response?.data?.pageable?.pageSize);
+				})
+				.catch((e) => {
+					console.log(e);
+					setIsLoading(false);
+				});
+		});
 	};
 
 	const handleClickOpen = (conge) => {
@@ -45,6 +57,7 @@ export default () => {
 
 	const handleClose = () => {
 		setOpen(false);
+		setIsLoading(false);
 	};
 	const handleChangePage = (event, newPage) => {
 		setPage(newPage);
@@ -66,11 +79,12 @@ export default () => {
 	}
 
 	const handleClickAnnuler = () => {
+		setIsLoading(true);
 		DEMANDE.annulerDemande(user.id, currentConge)
 			.then((response) => {
+				handleClose();
 				if (response.status === 200) {
 					fetchDemandes();
-					handleClose();
 				}
 			})
 			.catch((e) => {
@@ -89,7 +103,7 @@ export default () => {
 		modDemande.dateDebut = formatDateFunction(modDemande.dateDebut);
 		modDemande.dateReprise = formatDateFunction(modDemande.dateReprise);
 		modDemande.dateDemande = formatDateFunction(modDemande.dateDemande);
-		setIsLoading(false);
+		setIsLoading(true);
 		DEMANDE.envoyerDemande(user.id, modDemande)
 			.then((response) => {
 				handleClose();
@@ -99,7 +113,29 @@ export default () => {
 					toast("error", response?.response?.data?.message);
 				}
 			})
-			.catch((e) => toast("error", e?.message));
+			.catch((e) => {
+				handleClose();
+				toast("error", e?.message);
+			});
+	};
+	const handleClickDemandeAnnulation = (demande) => {
+		setIsLoading(true);
+		DEMANDE.demandeAnnulationDemande(user.id, demande.idDemande)
+			.then((response) => {
+				handleClose(true);
+				if (response.status == 200) {
+					fetchDemandes();
+					console.log(response.data);
+				} else {
+					toast("error", response?.response?.data?.message);
+				}
+			})
+
+			.catch((e) => {
+				handleClose();
+				console.log(e);
+				toast("error", e?.message);
+			});
 	};
 
 	return (
@@ -129,6 +165,7 @@ export default () => {
 				usePagination
 				handleSortMethod={handleSortMethod}
 				sort={sort}
+				handleClickDemandeAnnulation={handleClickDemandeAnnulation}
 			></TableDemandes>
 		</>
 	);

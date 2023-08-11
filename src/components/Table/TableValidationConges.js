@@ -5,7 +5,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { useColors, Fonts, FontSize } from "@common";
+import { useColors, Fonts } from "@common";
 import { Button, Modal } from "@components";
 import { Paginations } from "@components";
 import { Divider } from "@mui/material";
@@ -13,11 +13,15 @@ import { Divider } from "@mui/material";
 const TableValidationConges = ({
 	demandes,
 	open,
-	handleClickOpen,
-	handleClickAnnuler,
+	handleClickOpenValider,
+	handleClickOpenRefuser,
+	handleClickOpenAccepter,
+	handleClickOpenRejeter,
+	handleClickValider,
+	handleClickRefuser,
+	handleClickAccepter,
+	handleClickRejeter,
 	handleClose,
-	hanldeClickModifier,
-	handleClickEnvoyer,
 	usePagination,
 	page,
 	rowsPerPage,
@@ -26,6 +30,7 @@ const TableValidationConges = ({
 	count,
 	handleSortMethod,
 	sort,
+	action,
 }) => {
 	const Colors = useColors();
 
@@ -37,6 +42,7 @@ const TableValidationConges = ({
 		"Date Reprise",
 		"Nombre des jours",
 		"Description",
+		"Etat",
 		"Action",
 	];
 
@@ -108,14 +114,18 @@ const TableValidationConges = ({
 								<TableCell style={{ color: "grey" }}>
 									{minimizeString(row.description)}
 								</TableCell>
+								<TableCell style={{ color: "grey" }}>
+									{row.statutDemande}
+								</TableCell>
 								<TableCell>
 									<div style={{ display: "flex" }}>
-										{
+										{row?.statutDemande !== "demande annulation" ? (
 											<>
 												<Button
+													disabled={row?.statutDemande == "validé"}
 													btnText={"Valider"}
 													IconName={"AiOutlineCheck"}
-													//handlePressed={() => hanldeClickModifier(row)}
+													handlePressed={() => handleClickOpenValider(row)}
 													//isLoading={false}
 													styleDisabled={{
 														borderRadius: "12px",
@@ -139,9 +149,10 @@ const TableValidationConges = ({
 													}}
 												/>
 												<Button
+													disabled={row?.statutDemande == "refusé"}
 													btnText={"Refuser"}
 													IconName={"AiOutlineCheck"}
-													//handlePressed={() => handleClickOpen(row)}
+													handlePressed={() => handleClickOpenRefuser(row)}
 													//isLoading={false}
 													styleDisabled={{
 														borderRadius: "12px",
@@ -165,7 +176,64 @@ const TableValidationConges = ({
 													}}
 												/>
 											</>
-										}
+										) : (
+											<>
+												<Button
+													disabled={row?.statutDemande == "validé"}
+													btnText={"Accepter"}
+													IconName={"AiOutlineCheck"}
+													handlePressed={() => handleClickOpenAccepter(row)}
+													//isLoading={false}
+													styleDisabled={{
+														borderRadius: "12px",
+														padding: "10px",
+														fontFamily: Fonts().primaryRegular,
+														fontSize: "10px",
+														margin: "10px",
+														width: "100%",
+														background: "#dbdbdb",
+														text: "#FFF",
+													}}
+													style={{
+														color: Colors.blackText,
+														backgroundColor: "rgb(0 ,176, 7)",
+														borderRadius: 12,
+														padding: "10px 10px",
+														fontFamily: Fonts().primaryRegular,
+														fontSize: 10,
+														margin: "10px",
+														width: "100%",
+													}}
+												/>
+												<Button
+													disabled={row?.statutDemande == "refusé"}
+													btnText={"Rejeter"}
+													IconName={"AiOutlineCheck"}
+													handlePressed={() => handleClickOpenRejeter(row)}
+													//isLoading={false}
+													styleDisabled={{
+														borderRadius: "12px",
+														padding: "10px",
+														fontFamily: Fonts().primaryRegular,
+														fontSize: "10px",
+														margin: "10px",
+														width: "100%",
+														background: "#dbdbdb",
+														text: "#FFF",
+													}}
+													style={{
+														color: Colors.blackText,
+														backgroundColor: Colors.error,
+														borderRadius: 12,
+														padding: "10px 10px",
+														fontFamily: Fonts().primaryRegular,
+														fontSize: 10,
+														margin: "10px",
+														width: "100%",
+													}}
+												/>
+											</>
+										)}
 									</div>
 								</TableCell>
 							</TableRow>
@@ -174,11 +242,27 @@ const TableValidationConges = ({
 				</Table>
 				<Modal
 					open={open}
-					title="Confirmer l' action"
+					title={
+						action == "valider"
+							? "Confirmer la validation"
+							: action == "refus"
+							? "Confirmer le refus"
+							: action == "accepter"
+							? "Confirmer l' acceptation"
+							: "Confirmer le rejet"
+					}
 					positiveText={"Confirmer"}
 					negativeText={"Annuler"}
 					handleClose={handleClose}
-					handlePositiveEvent={handleClickAnnuler}
+					handlePositiveEvent={
+						action == "valider"
+							? handleClickValider
+							: action == "refuser"
+							? handleClickRefuser
+							: action == "accepter"
+							? handleClickAccepter
+							: handleClickRejeter
+					}
 				/>
 			</TableContainer>
 			<br />

@@ -69,7 +69,7 @@ export default ({}) => {
 	useEffect(() => {
 		if (idDemandeParam) initializeForm();
 		setIsLoading(true);
-		DEMANDE.getDemandeByCodeTypeDemande("DC")
+		DEMANDE.getTypeDemandeByCodeTypeDemande("DC")
 			.then((response) => {
 				handleClose();
 				setDemande(response.data);
@@ -143,7 +143,7 @@ export default ({}) => {
 					// setDateStart(null);
 					// setDateEnd(null);
 					// setTypeConge(null);
-					navigate("/test");
+					navigate("/mesConges");
 				} else if (response.status === 500) {
 					toast("error", response?.response?.data);
 				} else {
@@ -260,6 +260,7 @@ export default ({}) => {
 				<div className="signle__items__settings">
 					<div className="test_class">
 						<TextInput
+							disabled={idDemandeParam ? true : false}
 							label="Nom du congé"
 							IconName={AddIcon}
 							value={TaskName}
@@ -269,6 +270,7 @@ export default ({}) => {
 							useGray
 						/>
 						<TextInput
+							disabled={idDemandeParam ? true : false}
 							label="Description"
 							IconName={AddIcon}
 							value={description}
@@ -280,6 +282,7 @@ export default ({}) => {
 					</div>
 					<div className="title__of__conge">
 						<Select
+							disabled={idDemandeParam ? true : false}
 							isHolidays
 							useId
 							label={"Type de Congé"}

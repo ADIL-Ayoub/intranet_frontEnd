@@ -5,6 +5,7 @@ import { ActivityIndicator } from "@components";
 import { Fonts, FontSize } from "@common";
 import { makeStyles } from "@mui/styles";
 import SwitchRightIcon from "@mui/icons-material/SwitchRight";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 
 export default ({
 	btnText,
@@ -19,6 +20,7 @@ export default ({
 	isFilter,
 	sort,
 	styleDisabled,
+	isForPerson,
 }) => {
 	const classes = useStyle();
 	return (
@@ -56,6 +58,7 @@ export default ({
 						style={{ transform: sort ? "rotate(-90deg)" : "rotate(90deg)" }}
 					/>
 				)}
+				{isForPerson && <CheckBoxOutlineBlankIcon />}
 			</Button>
 		</Stack>
 	);

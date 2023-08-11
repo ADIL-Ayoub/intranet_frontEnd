@@ -4,7 +4,6 @@ import { DEMANDE } from "@services";
 import { useSelector } from "react-redux";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useNavigate } from "react-router-dom";
 import { useToast } from "@common";
 
 function ValiderDemandesConges() {
@@ -18,32 +17,39 @@ function ValiderDemandesConges() {
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const [sort, setSort] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
+	const [action, setAction] = useState("");
 	const toast = useToast();
-	const navigate = useNavigate();
 	useEffect(() => {
 		fetchDemandes();
 	}, [page, rowsPerPage, sort]);
 
 	const fetchDemandes = () => {
 		setIsLoading(true);
-		DEMANDE.getMyDemandes(user.id, rowsPerPage, page, sort)
-			.then((response) => {
-				setIsLoading(false);
-				setDemandes(response.data.content);
-				setCount(response.data.totalElements);
-				setPage(response?.data?.pageable?.pageNumber);
-				setRowsPerPage(response?.data?.pageable?.pageSize);
-			})
-			.catch((e) => console.log(e));
-	};
-
-	const handleClickOpen = (conge) => {
-		setOpen(true);
-		setCurrentConge(conge);
+		DEMANDE.getTypeDemandeByCodeTypeDemande("DC").then((response) => {
+			DEMANDE.getDemandesByCodeSup(
+				user.id,
+				response?.data?.id,
+				rowsPerPage,
+				page,
+				sort,
+			)
+				.then((response) => {
+					setIsLoading(false);
+					setDemandes(response.data.content);
+					setCount(response.data.totalElements);
+					setPage(response?.data?.pageable?.pageNumber);
+					setRowsPerPage(response?.data?.pageable?.pageSize);
+				})
+				.catch((e) => {
+					setIsLoading(false);
+					console.log(e);
+				});
+		});
 	};
 
 	const handleClose = () => {
 		setOpen(false);
+		setIsLoading(false);
 	};
 	const handleChangePage = (event, newPage) => {
 		setPage(newPage);
@@ -57,48 +63,95 @@ function ValiderDemandesConges() {
 	const handleSortMethod = () => {
 		setSort(!sort);
 	};
-	//Pour changer le format de la date de dd-MM-yyyy à yyyy-MM-dd
-	function formatDateFunction(inputDate) {
-		const [day, month, year] = inputDate.split("-");
-		const formattedDate = `${year}-${month}-${day}`;
-		return formattedDate;
-	}
 
-	const handleClickAnnuler = () => {
-		DEMANDE.annulerDemande(user.id, currentConge)
+	const handleClickOpenValider = (demande) => {
+		setOpen(true);
+		setCurrentConge(demande);
+		setAction("valider");
+	};
+
+	const handleClickOpenRefuser = (demande) => {
+		setOpen(true);
+		setCurrentConge(demande);
+		setAction("refuser");
+	};
+
+	const handleClickOpenAccepter = (demande) => {
+		setOpen(true);
+		setCurrentConge(demande);
+		setAction("accepter");
+	};
+
+	const handleClickOpenRejeter = (demande) => {
+		setOpen(true);
+		setCurrentConge(demande);
+		setAction("rejeter");
+	};
+
+	const handleClickValider = () => {
+		handleClose();
+		setIsLoading(true);
+		DEMANDE.decisionDemande(user.id, currentConge?.idDemande, "validé")
 			.then((response) => {
+				handleClose();
 				if (response.status === 200) {
+					toast("success", "La validation est faite avec succée");
 					fetchDemandes();
-					handleClose();
+				} else {
+					toast("error", response?.response?.data?.message);
 				}
 			})
 			.catch((e) => {
 				handleClose();
 			});
 	};
-
-	const hanldeClickModifier = (demande) => {
-		const idDemandeParam = demande.idDemande;
-		navigate(`/demandes/${encodeURIComponent(idDemandeParam)}`);
-	};
-
-	const handleClickEnvoyer = (demande) => {
-		const modDemande = { ...demande };
-
-		modDemande.dateDebut = formatDateFunction(modDemande.dateDebut);
-		modDemande.dateReprise = formatDateFunction(modDemande.dateReprise);
-		modDemande.dateDemande = formatDateFunction(modDemande.dateDemande);
-		setIsLoading(false);
-		DEMANDE.envoyerDemande(user.id, modDemande)
+	const handleClickRefuser = () => {
+		handleClose();
+		setIsLoading(true);
+		DEMANDE.decisionDemande(user.id, currentConge?.idDemande, "refusé")
 			.then((response) => {
 				handleClose();
 				if (response.status === 200) {
+					toast("success", "Le refus est fait avec succée");
 					fetchDemandes();
-				} else {
-					toast("error", response?.response?.data?.message);
 				}
+				toast("error", response?.response?.data?.message);
 			})
-			.catch((e) => toast("error", e?.message));
+			.catch((e) => {
+				handleClose();
+			});
+	};
+	const handleClickAccepter = () => {
+		handleClose();
+		setIsLoading(true);
+		DEMANDE.decisionDemande(user.id, currentConge?.idDemande, "accepté")
+			.then((response) => {
+				handleClose();
+				if (response.status === 200) {
+					toast("success", response.data.message);
+					fetchDemandes();
+				}
+				toast("error", response?.response?.data?.message);
+			})
+			.catch((e) => {
+				handleClose();
+			});
+	};
+	const handleClickRejeter = () => {
+		handleClose();
+		setIsLoading(true);
+		DEMANDE.decisionDemande(user.id, currentConge?.idDemande, "rejeté")
+			.then((response) => {
+				handleClose();
+				if (response.status === 200) {
+					toast("success", response.data.message);
+					fetchDemandes();
+				}
+				toast("error", response?.response?.data?.message);
+			})
+			.catch((e) => {
+				handleClose();
+			});
 	};
 
 	return (
@@ -115,11 +168,11 @@ function ValiderDemandesConges() {
 			<TableValidationConges
 				demandes={demandes}
 				open={open}
-				handleClickOpen={handleClickOpen}
-				handleClickAnnuler={handleClickAnnuler}
+				handleClickOpenValider={handleClickOpenValider}
+				handleClickOpenRefuser={handleClickOpenRefuser}
+				handleClickValider={handleClickValider}
+				handleClickRefuser={handleClickRefuser}
 				handleClose={handleClose}
-				hanldeClickModifier={hanldeClickModifier}
-				handleClickEnvoyer={handleClickEnvoyer}
 				page={page}
 				rowsPerPage={rowsPerPage}
 				handleChangeRowsPerPage={handleChangeRowsPerPage}
@@ -128,6 +181,11 @@ function ValiderDemandesConges() {
 				usePagination
 				handleSortMethod={handleSortMethod}
 				sort={sort}
+				action={action}
+				handleClickOpenAccepter={handleClickOpenAccepter}
+				handleClickOpenRejeter={handleClickOpenRejeter}
+				handleClickAccepter={handleClickAccepter}
+				handleClickRejeter={handleClickRejeter}
 			></TableValidationConges>
 		</>
 	);

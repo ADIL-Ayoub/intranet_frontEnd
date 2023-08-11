@@ -18,6 +18,7 @@ function TableDemandes({
 	handleClose,
 	hanldeClickModifier,
 	handleClickEnvoyer,
+	handleClickDemandeAnnulation,
 	usePagination,
 	page,
 	rowsPerPage,
@@ -93,6 +94,7 @@ function TableDemandes({
 					</TableHead>
 					<TableBody>
 						{demandes.map((row, index) => (
+							//row?.status!="annulé" &&
 							<TableRow key={row?.id}>
 								<TableCell style={{ color: "grey" }}>{index + 1}</TableCell>
 								<TableCell style={{ color: "grey" }}>
@@ -112,7 +114,7 @@ function TableDemandes({
 								<TableCell style={{ color: "grey" }}>{row.status}</TableCell>
 								<TableCell>
 									<div style={{ display: "flex" }}>
-										{
+										{row?.status !== "validé" ? (
 											<>
 												<Button
 													disabled={row?.status !== "crée"}
@@ -133,33 +135,6 @@ function TableDemandes({
 													style={{
 														color: Colors.blackText,
 														backgroundColor: "#105DA6",
-														borderRadius: 12,
-														padding: "10px 10px",
-														fontFamily: Fonts().primaryRegular,
-														fontSize: 10,
-														margin: "10px",
-														width: "100%",
-													}}
-												/>
-												<Button
-													disabled={row?.status !== "crée"}
-													btnText={"Annuler"}
-													IconName={"AiOutlineCheck"}
-													handlePressed={() => handleClickOpen(row)}
-													//isLoading={false}
-													styleDisabled={{
-														borderRadius: "12px",
-														padding: "10px",
-														fontFamily: Fonts().primaryRegular,
-														fontSize: "10px",
-														margin: "10px",
-														width: "100%",
-														background: "#dbdbdb",
-														text: "#FFF",
-													}}
-													style={{
-														color: Colors.blackText,
-														backgroundColor: Colors.error,
 														borderRadius: 12,
 														padding: "10px 10px",
 														fontFamily: Fonts().primaryRegular,
@@ -195,8 +170,65 @@ function TableDemandes({
 														width: "100%",
 													}}
 												/>
+												<Button
+													disabled={
+														row?.status !== "crée" && row?.status !== "envoyé"
+													}
+													btnText={"Annuler"}
+													IconName={"AiOutlineCheck"}
+													handlePressed={() => handleClickOpen(row)}
+													//isLoading={false}
+													styleDisabled={{
+														borderRadius: "12px",
+														padding: "10px",
+														fontFamily: Fonts().primaryRegular,
+														fontSize: "10px",
+														margin: "10px",
+														width: "100%",
+														background: "#dbdbdb",
+														text: "#FFF",
+													}}
+													style={{
+														color: Colors.blackText,
+														backgroundColor: Colors.error,
+														borderRadius: 12,
+														padding: "10px 10px",
+														fontFamily: Fonts().primaryRegular,
+														fontSize: 10,
+														margin: "10px",
+														width: "100%",
+													}}
+												/>
 											</>
-										}
+										) : (
+											<Button
+												disabled={row?.statutDemande === "demande annulation"}
+												btnText={"Demande d'annulation"}
+												IconName={"AiOutlineCheck"}
+												handlePressed={() => handleClickDemandeAnnulation(row)}
+												//isLoading={false}
+												styleDisabled={{
+													borderRadius: "12px",
+													padding: "10px",
+													fontFamily: Fonts().primaryRegular,
+													fontSize: "10px",
+													margin: "10px",
+													width: "100%",
+													background: "#dbdbdb",
+													text: "#FFF",
+												}}
+												style={{
+													color: Colors.blackText,
+													backgroundColor: Colors.success,
+													borderRadius: 12,
+													padding: "10px 10px",
+													fontFamily: Fonts().primaryRegular,
+													fontSize: 10,
+													margin: "10px",
+													width: "100%",
+												}}
+											/>
+										)}
 									</div>
 								</TableCell>
 							</TableRow>

@@ -27,16 +27,6 @@ import { useSelector } from "react-redux";
 
 const BarItem = [
 	{
-		id: 0,
-		name: "test",
-		label: "Test",
-		path: "/test",
-		Icon: <FcHome />,
-		privilege: "dashboard",
-		isList: false,
-		subList: [],
-	},
-	{
 		id: 1,
 		name: "dashboard",
 		label: "Dashboard",
@@ -178,7 +168,7 @@ const BarItem = [
 				path: "/demandes",
 				Icon: <FcPlus />,
 				isVisble: false,
-				privilege: "find_services",
+				privilege: "add_demande_conge",
 			},
 			{
 				id: 4,
@@ -187,7 +177,7 @@ const BarItem = [
 				path: "/mesConges",
 				Icon: <FcPlus />,
 				isVisble: false,
-				privilege: "find_services",
+				privilege: "find_mes_demandes",
 			},
 			{
 				id: 5,
@@ -196,7 +186,16 @@ const BarItem = [
 				path: "/validerConges",
 				Icon: <FcPlus />,
 				isVisble: false,
-				privilege: "find_services",
+				privilege: "decision_conge",
+			},
+			{
+				id: 6,
+				name: "Demander un congé pour un employé",
+				label: "Demander un congé pour un employé",
+				path: "/demandeCongePourAutre",
+				Icon: <FcPlus />,
+				isVisble: false,
+				privilege: "demande_conge_by_superieur",
 			},
 		],
 	},

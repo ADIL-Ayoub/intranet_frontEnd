@@ -21,6 +21,7 @@ import SmallAddition from "./SmallAddition";
 import ChangePassword from "./ChangePassword";
 import DemandeConge from "./Demandes/DemandeConge";
 import FetchDemandesConges from "./Demandes/FetchDemandesConges";
+import DemandeCongePourAutre from "./Demandes/DemandeCongePourAutre";
 
 export {
 	Home,
@@ -46,4 +47,5 @@ export {
 	SmallAddition,
 	DemandeConge,
 	FetchDemandesConges,
+	DemandeCongePourAutre,
 };

@@ -23,6 +23,7 @@ import {
 	SmallAddition,
 	DemandeConge,
 	FetchDemandesConges,
+	DemandeCongePourAutre,
 } from "@screens";
 import { Drawer } from "@components";
 import { useSelector } from "react-redux";
@@ -61,9 +62,9 @@ const AppLoggedRoutes = () => {
 		{ path: "/semain", element: <Semain /> },
 		{ path: "/demandes", element: <DemandeConge /> },
 		{ path: "/demandes/:idDemandeParam", element: <DemandeConge /> },
-		{ path: "/test", element: <FetchDemandesConges /> },
 		{ path: "/mesConges", element: <FetchDemandesConges /> },
 		{ path: "/validerConges", element: <ValiderDemandesConges /> },
+		{ path: "/demandeCongePourAutre", element: <DemandeCongePourAutre /> },
 	]);
 	return routes;
 };

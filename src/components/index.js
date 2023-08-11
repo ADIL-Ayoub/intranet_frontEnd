@@ -31,6 +31,7 @@ import BackDrop from "./BackDrop";
 import TimesheetByProject from "./Table/TimesheetByProject";
 import TableDemandes from "./Table/TableDemandes";
 import TableValidationConges from "./Table/TableValidationConges";
+import TablePersonnesForDemandeConge from "./Table/TablePersonnesForDemandeConge";
 
 export {
 	WrappedTheme,
@@ -66,4 +67,5 @@ export {
 	TimesheetByProject,
 	TableDemandes,
 	TableValidationConges,
+	TablePersonnesForDemandeConge,
 };
