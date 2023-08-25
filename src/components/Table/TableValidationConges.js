@@ -245,7 +245,7 @@ const TableValidationConges = ({
 					title={
 						action == "valider"
 							? "Confirmer la validation"
-							: action == "refus"
+							: action == "refuser"
 							? "Confirmer le refus"
 							: action == "accepter"
 							? "Confirmer l' acceptation"

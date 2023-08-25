@@ -52,6 +52,7 @@ export default ({}) => {
 					//console.log("**************************");
 					//console.log(response.data.content["0"]);
 					setDemandeModifier(response.data.content["0"]);
+					console.log(response.data.content["0"]);
 					return response.data.content["0"];
 				})
 				.then((response) => {
@@ -103,8 +104,8 @@ export default ({}) => {
 			description,
 			typeDemande: demande.id,
 			typeConge,
-			dateDebut: dateStart,
-			dateReprise: dateEnd,
+			dateDebut: format(new Date(dateStart), "yyyy-MM-dd"),
+			dateReprise: format(new Date(dateEnd), "yyyy-MM-dd"),
 		};
 		CONGE.ajouterDemandeConge(user.id, data)
 			.then((response) => {
@@ -130,9 +131,10 @@ export default ({}) => {
 			...demandeModifier,
 			nomConge: TaskName,
 			description,
-			dateDebut: dateStart,
-			dateReprise: dateEnd,
+			dateDebut: format(new Date(dateStart), "yyyy-MM-dd"),
+			dateReprise: format(new Date(dateEnd), "yyyy-MM-dd"),
 		};
+		console.log(data);
 		DEMANDE.modifierDemande(user.id, data)
 			.then((response) => {
 				handleClose();
@@ -150,7 +152,9 @@ export default ({}) => {
 					toast("error", response?.response?.data?.message);
 				}
 			})
-			.catch((error) => {});
+			.catch((error) => {
+				handleClose();
+			});
 	};
 	const FetchHolidays = () => {
 		setIsLoading(true);
@@ -303,11 +307,13 @@ export default ({}) => {
 									label="Date de depart"
 									value={dateStart}
 									onChangeDate={handleChangeDateStart}
+									dateFormat="yyyy-MM-dd"
 								/>
 								<DatePicker
 									label="Date de reprise"
 									value={dateEnd}
 									onChangeDate={handleChangeDateEnd}
+									dateFormat="yyyy-MM-dd"
 								/>
 							</div>
 						)}
