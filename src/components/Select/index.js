@@ -24,6 +24,8 @@ export default ({
 	useIdPays,
 	isHolidays,
 	isLabel,
+	isProject,
+	isTime,
 }) => {
 	const isDark = useIsDarkMode();
 	const Colors = useColors();
@@ -49,12 +51,14 @@ export default ({
 				label={label}
 				onChange={(e) => handleOnChange(e)}
 				MenuProps={MenuProps}
-				multiple={data.length > 0 && isMultible}
+				multiple={data?.length > 0 && isMultible}
 			>
 				<MenuItem>
 					<em>None</em>
 				</MenuItem>
 				{!!data &&
+					!isProject &&
+					!isTime &&
 					data.map((ele) => (
 						<MenuItem
 							key={ele.id}
@@ -90,6 +94,27 @@ export default ({
 								: ele.name}
 						</MenuItem>
 					))}
+				{!!data &&
+					isProject &&
+					!isTime &&
+					data?.length > 0 &&
+					data.map((item) => {
+						return (
+							<MenuItem key={item.id} value={item.shortNameProjet}>
+								{`${item.codeProjet} - ${item.shortNameProjet}`}
+							</MenuItem>
+						);
+					})}
+				{!!data &&
+					isTime &&
+					data?.length > 0 &&
+					data.map((item, index) => {
+						return (
+							<MenuItem key={index} value={item}>
+								{`${item}`}
+							</MenuItem>
+						);
+					})}
 			</Select>
 		</FormControl>
 	);

@@ -187,10 +187,10 @@ export default ({}) => {
 			currentDate,
 			newDatePicked,
 		);
-		if (differenceInDays < 2) {
+		if (differenceInDays <= -1) {
 			toast(
 				"error",
-				"Erreur: Veuillez inserer une date valide et differente de 2 jours de la date actuelle!",
+				"Erreur: Veuillez inserer une date valide (min : aujourd'hui) !",
 			);
 			setDateStart(null);
 		} else {

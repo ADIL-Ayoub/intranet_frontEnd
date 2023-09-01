@@ -27,6 +27,7 @@ import {
 	PERSONNES,
 	DEPARTEMENT,
 	TIMESHEETS,
+	PROJET,
 } from "@services";
 import { useParams } from "react-router-dom";
 import SaveIcon from "@mui/icons-material/Save";
@@ -78,13 +79,9 @@ export default ({}) => {
 	const dispatch = useDispatch();
 	const toast = useToast();
 	const Colors = useColors();
-	const [typeTs, setTypeTs] = useState(null);
-	const [isAuto, setIsAuto] = useState(false);
-	const [isWithProject, setIsWithProject] = useState(false);
 	const [serviceData, setServicesData] = useState([]);
 	const [serviceValue, setServicesValue] = useState([]);
 	const [personnesData, setPersonnes] = useState(dataTable | []);
-	const [typesTsData, setTypesTsData] = useState(TypesTs);
 	const [page, setPage] = useState(0);
 	const [count, setCount] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -96,13 +93,8 @@ export default ({}) => {
 	const [date, setDate] = useState(new Date());
 	const [daysTypeData, setDaysTypeData] = useState(DaysType);
 	const [daysTypeValue, setDaysTypeValue] = useState("journalier");
-	const [open, setOpen] = useState(false);
-	const [selectedPersonnes, setSelectedPesronnes] = useState([]);
-	const [hDMorning, setHDMorning] = useState("");
-	const [hFMorning, setHFMorning] = useState("");
-	const [hDAfternon, setHDAfternon] = useState("");
-	const [hFAfternon, setHFAfternon] = useState("");
 	const [projet, setProjet] = useState("");
+	const [projets, setProjets] = useState("");
 	const [time, setTimer] = useState("");
 	const [description, setDescription] = useState("");
 	const [tehDay, setTheDay] = useState(
@@ -110,9 +102,6 @@ export default ({}) => {
 	); //
 	const [Enddate, setEndDate] = useState(new Date());
 	const [typeOfDayValue, setTypeOfDayValue] = useState("");
-	const [isAbsent, setIsAbsent] = useState(false);
-	const [motif, setMotif] = useState("");
-	const [houreAdded, setHoureAdded] = useState("");
 	const [headerContentField, setHeaderContentField] = useState(HeaderContent);
 	const [daysList, setDaysList] = useState([]);
 	const [weeks, setWeeks] = useState([]);
@@ -137,6 +126,26 @@ export default ({}) => {
 	const [openModal, setOpenModal] = useState(false);
 	const [TmpTsByProject, setTmpTsByProject] = useState([]);
 	const [IdHoraire, setIdHoraire] = useState(null);
+	const optionss = [
+		"00:30",
+		"01:00",
+		"01:30",
+		"02:00",
+		"02:30",
+		"03:00",
+		"03:30",
+		"04:00",
+		"04:30",
+		"05:00",
+		"05:30",
+		"06:00",
+		"06:30",
+		"07:00",
+		"07:30",
+		"08:00",
+	];
+	const [totalHeures, setTotalHeures] = React.useState("00:00");
+	const [heureTravail, setHeureTravail] = React.useState("08:00");
 
 	useEffect(() => {
 		// findOneClient();
@@ -203,6 +212,9 @@ export default ({}) => {
 	};
 	const handelSubmit = () => {
 		setTmpTsByProject([]);
+		setOpenModal(false);
+		//setHeureTravail("08:00");
+		setTotalHeures("00:00");
 		toast("success", "Ajout fait avec succes");
 		TIMESHEETBYPROJECT.TimeSheetByProject(user.id, TmpTsByProject)
 			.then((response) => {
@@ -253,6 +265,17 @@ export default ({}) => {
 					setOpenBack(false);
 				}
 			})
+			.then(() => {
+				TIMESHEETBYPROJECT.fetchHeureTravail(serviceValue[0])
+					.then((response) => {
+						//console.log(response, "------------------");
+						setHeureTravail(response.data);
+					})
+					.catch((error) => {
+						//console.log(error, "*******************");
+						toast("error", error?.message);
+					});
+			})
 			.catch((error) => {
 				setIsLoading(false);
 				setOpenBack(false);
@@ -272,6 +295,12 @@ export default ({}) => {
 					setIsLoading(false);
 				}
 			});
+
+		PROJET.fetchProjetsByService(serviceValue).then((response) => {
+			console.log("***************************");
+			console.log(response.data);
+			setProjets(response.data);
+		});
 	};
 
 	const handleChangePage = (event, newPage) => {
@@ -322,6 +351,11 @@ export default ({}) => {
 
 	const handleOnChangeDaysType = (e) => {
 		setDaysTypeValue(e.target.value);
+	};
+
+	const handleOnChangeProject = (e) => {
+		setProjet(e.target.value);
+		console.log(e.target.value);
 	};
 
 	const OnChangeEndDate = (e) => {
@@ -578,8 +612,50 @@ export default ({}) => {
 	};
 	const handleClosegenerateTsPerProjectModal = () => {
 		setTmpTsByProject([]);
+		setTotalHeures("00:00");
 		setOpenModal(false);
+		//setHeureTravail("08:00");
 	};
+	// const handleInputChangeInputSelect = (event) => {
+	// 	let value = event.target.value;
+	// 	console.log(value);
+
+	// 	value = value.replace(/[^0-9]/g, "");
+	// 	if (value.length > 2) {
+	// 		value = `${value.slice(0, 2)}:${value.slice(2)}`;
+	// 	}
+	// 	if (value.length > 5) value = value.substring(0, 5);
+	// 	console.log(value);
+	// 	setTime(value);
+	// };
+	const handleSelectInputSelect = (option) => {
+		console.log(option?.target?.value);
+		setTimer(option?.target?.value);
+	};
+	const handleTotalHeures = () => {
+		var copyOfTotalHeures = totalHeures;
+		TmpTsByProject?.map(
+			(item) => (copyOfTotalHeures = addTime(totalHeures, item.time)),
+		);
+		setTotalHeures(copyOfTotalHeures);
+	};
+	function addTime(time1, time2) {
+		const [hours1, minutes1] = time1.split(":").map(Number);
+		const [hours2, minutes2] = time2.split(":").map(Number);
+
+		// Calculate total minutes
+		let totalMinutes = (hours1 + hours2) * 60 + minutes1 + minutes2;
+
+		// Calculate total hours and remaining minutes
+		const totalHours = Math.floor(totalMinutes / 60);
+		const remainingMinutes = totalMinutes % 60;
+
+		// Format the result
+		const result = `${String(totalHours).padStart(2, "0")}:${String(
+			remainingMinutes,
+		).padStart(2, "0")}`;
+		return result;
+	}
 
 	return (
 		<div
@@ -679,7 +755,7 @@ export default ({}) => {
 											marginTop: 1,
 											marginLeft: 1,
 										}}
-										isMultible={true}
+										//isMultible={true}
 										value={serviceValue || ""}
 										useId
 										isServices
@@ -806,19 +882,7 @@ export default ({}) => {
 										value={daysTypeValue}
 										handleOnChange={handleOnChangeDaysType}
 									/>
-									{/* {daysTypeValue !== "" && (
-                    <Select
-                      label={"Journée | Journée / 2"}
-                      data={typeOfDayData}
-                      style={{
-                        width: "30ch",
-                        marginTop: "6px",
-                        marginRight: 1,
-                      }}
-                      value={typeOfDayValue}
-                      handleOnChange={handleOnChangeTypeOfDays}
-                    />
-                  )} */}
+
 									<DatePicker
 										label={
 											daysTypeValue === "journalier" ||
@@ -984,16 +1048,16 @@ export default ({}) => {
 							handlePositiveEvent={() => handelSubmit()}
 						>
 							<div className="inputsTimesheetProjet">
-								<TextInput
-									isRequired
-									disabled={isLoading}
-									label="Nom de projet"
-									IconName={FlagIcon}
+								<Select
+									label={"Projet*"}
+									data={projets}
+									style={{
+										width: "30ch",
+										marginTop: 1,
+									}}
 									value={projet}
-									handleChangeValue={(e) => setProjet(e.target.value)}
-									style={{ width: "100%", marginTop: 8, borderRadius: 22 }}
-									removeBase
-									useGray
+									handleOnChange={handleOnChangeProject}
+									isProject={true}
 								/>
 								<TextInput
 									isRequired
@@ -1015,6 +1079,18 @@ export default ({}) => {
 									removeBase
 									useGray
 								/>
+								<Select
+									label={""}
+									data={optionss}
+									style={{
+										width: "5%",
+										marginTop: 1,
+									}}
+									value={time}
+									handleOnChange={handleSelectInputSelect}
+									isTime={true}
+								/>
+
 								<TextInput
 									isRequired
 									disabled={isLoading}
@@ -1043,41 +1119,19 @@ export default ({}) => {
 								/>
 							</div>
 							<div className="TsProject">
-								<TimesheetByProject projets={TmpTsByProject} />
+								{heureTravail && (
+									<TimesheetByProject
+										projets={TmpTsByProject}
+										handleTotalHeures={handleTotalHeures}
+										value={totalHeures}
+										heureTravail={heureTravail}
+									/>
+								)}
 							</div>
 						</Modal>
 					</Grids>
 				</Grid>
 			</Box>
-			{/* <Modal
-        open={open}
-        handleClose={handleCloseModal}
-        title={"Changement d'horaires"}
-        positiveText={"mise à jour"}
-        negativeText="Annuler"
-        handlePositiveEvent={handleChangeSchedules}
-      >
-        <div style={{ width: 1000, height: 600 }}>
-          <Tabs
-            hDMorning={hDMorning}
-            hFMorning={hFMorning}
-            hDAfternon={hDAfternon}
-            hFAfternon={hFAfternon}
-            handleHDM={handleHDM}
-            handleHFM={handleHFM}
-            handleHDS={handleHDS}
-            handleHFS={handleHFS}
-            day={tehDay}
-            typeOfDay={daysTypeValue}
-            isAbsent={isAbsent}
-            handleCheckIsAbsent={handleCheckIsAbsent}
-            houreAdded={houreAdded}
-            handleChangeHoureAdded={handleChangeHoureAdded}
-            motif={motif}
-            handleMotif={handleMotif}
-          />
-        </div>
-      </Modal> */}
 			<BackDrop open={openBack} handleClose={() => setOpenBack(false)} />
 		</div>
 	);

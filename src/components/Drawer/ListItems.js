@@ -145,8 +145,8 @@ const BarItem = [
 		subList: [
 			{
 				id: 1,
-				name: "Génération des timesheets sans projet",
-				label: "Génération des timesheets sans projet",
+				name: "Génération des timesheets ",
+				label: "Génération des timesheets",
 				path: "/gestion_ts",
 				Icon: <FcCalendar />,
 				isVisble: false,

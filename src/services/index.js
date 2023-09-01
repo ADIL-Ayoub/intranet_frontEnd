@@ -14,6 +14,7 @@ import { TIMESHEETBYPROJECT } from "./TimeSheetByProjet";
 //mon code
 import { CONGE } from "./Conge/Conge";
 import { DEMANDE } from "./Demande/DEMANDE";
+import { PROJET } from "./Projet/projet";
 
 export {
 	AUTH,
@@ -31,4 +32,5 @@ export {
 	TIMESHEETBYPROJECT,
 	CONGE,
 	DEMANDE,
+	PROJET,
 };
